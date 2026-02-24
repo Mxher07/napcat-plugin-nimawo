@@ -191,69 +191,32 @@ export function isAdmin(event: OB11Message): boolean {
 export async function handleMessage(ctx: NapCatPluginContext, event: OB11Message): Promise<void> {
     try {
         const rawMessage = event.raw_message || '';
-        const messageType = event.message_type;
-        const groupId = event.group_id;
-        const userId = event.user_id;
 
-        pluginState.ctx.logger.debug(`收到消息: ${rawMessage} | 类型: ${messageType}`);
-
-        // 群消息：检查该群是否启用
-        if (messageType === 'group' && groupId) {
-            if (!pluginState.isGroupEnabled(String(groupId))) return;
+        // 调试日志输出
+        if (pluginState.config.debug) {
+            pluginState.logger.debug(`收到消息: ${rawMessage}`);
         }
 
-        // 检查命令前缀
-        const prefix = pluginState.config.commandPrefix || '#cmd';
-        if (!rawMessage.startsWith(prefix)) return;
+        // 全局开关
+        if (!pluginState.config.enabled) return;
 
-        // 解析命令参数
-        const args = rawMessage.slice(prefix.length).trim().split(/\s+/);
-        const subCommand = args[0]?.toLowerCase() || '';
+        // 忽略机器人自己发的消息
+        if (String(event.user_id) === pluginState.selfId) return;
 
-        // TODO: 在这里实现你的命令处理逻辑
-        switch (subCommand) {
-            case 'help': {
-                const helpText = [
-                    `[= 插件帮助 =]`,
-                    `${prefix} help - 显示帮助信息`,
-                    `${prefix} ping - 测试连通性`,
-                    `${prefix} status - 查看运行状态`,
-                ].join('\n');
-                await sendReply(ctx, event, helpText);
-                break;
+        // 全局冷却判断
+        const key = 'niMaWo';
+        const remaining = getCooldownRemaining('global', key);
+        if (remaining > 0) {
+            if (pluginState.config.debug) {
+                pluginState.logger.debug(`冷却中，剩余 ${remaining} 秒`);
             }
+            return;
+        }
 
-            case 'ping': {
-                // 群消息检查 CD
-                if (messageType === 'group' && groupId) {
-                    const remaining = getCooldownRemaining(groupId, 'ping');
-                    if (remaining > 0) {
-                        await sendReply(ctx, event, `请等待 ${remaining} 秒后再试`);
-                        return;
-                    }
-                }
-
-                await sendReply(ctx, event, 'pong!');
-                if (messageType === 'group' && groupId) setCooldown(groupId, 'ping');
-                pluginState.incrementProcessed();
-                break;
-            }
-
-            case 'status': {
-                const statusText = [
-                    `[= 插件状态 =]`,
-                    `运行时长: ${pluginState.getUptimeFormatted()}`,
-                    `今日处理: ${pluginState.stats.todayProcessed}`,
-                    `总计处理: ${pluginState.stats.processed}`,
-                ].join('\n');
-                await sendReply(ctx, event, statusText);
-                break;
-            }
-
-            default: {
-                // TODO: 在这里处理你的主要命令逻辑
-                break;
-            }
+        // 目标触发文本
+        if (rawMessage === '你骂我？') {
+            await sendReply(ctx, event, '你骂我？');
+            setCooldown('global', key);
         }
     } catch (error) {
         pluginState.logger.error('处理消息时出错:', error);

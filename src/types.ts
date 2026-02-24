@@ -18,9 +18,10 @@ export interface PluginConfig {
     enabled: boolean;
     /** 调试模式：启用后输出详细日志 */
     debug: boolean;
-    /** 按群的单独配置 */
+    /** 冷却时长，单位秒 */
+    cooldownSeconds?: number;
+    /** 按群的单独配置 (当前未使用) */
     groupConfigs: Record<string, GroupConfig>;
-    // TODO: 在这里添加你的插件配置项
 }
 
 /**

@@ -10,9 +10,8 @@ import type { PluginConfig } from './types';
 export const DEFAULT_CONFIG: PluginConfig = {
     enabled: true,
     debug: false,
+    cooldownSeconds: 20, // 默认 20 秒冷却
     groupConfigs: {},
-    
-    // TODO: 在这里添加你的默认配置值
 };
 
 /**
@@ -41,5 +40,7 @@ export function buildConfigSchema(ctx: NapCatPluginContext): PluginConfigSchema 
         ctx.NapCatConfig.boolean('enabled', '启用插件', true, '是否启用此插件的功能'),
         // 调试模式
         ctx.NapCatConfig.boolean('debug', '调试模式', false, '启用后将输出详细的调试日志'),
+        // 冷却时间
+        ctx.NapCatConfig.number('cooldownSeconds', '冷却时间（秒）', 20, '当有人发送“你骂我？”时，20 秒内不再回应'),
     );
 }
