@@ -88,6 +88,10 @@ export const plugin_onevent: PluginModule['plugin_onevent'] = async (ctx, event)
     // 示例：
     // if (event.post_type === EventType.NOTICE) { ... }
     // if (event.post_type === EventType.REQUEST) { ... }
+    if (event.post_type === EventType.NOTICE)
+    {
+    
+    }
 };
 
 /**

@@ -1,21 +1,20 @@
 {
-  "name": "napcat-plugin-template",
-  "plugin": "插件模板",
+  "name": "napcat-plugin-nimawo",
+  "plugin": "你骂我？",
   "version": "1.0.0",
   "type": "module",
   "main": "index.mjs",
-  "description": "NapCat 插件开发模板 - 快速开始你的插件开发",
-  "author": "Your Name",
+  "description": "自动跟一个'你骂我？'",
+  "author": "カナヤ ヒナく",
   "license": "MIT",
   "keywords": [
     "napcat",
     "plugin",
     "qq",
-    "template"
   ],
   "napcat": {
     "tags": [
-      "工具"
+      "娱乐"
     ],
     "minVersion": "4.14.0",
     "homepage": ""
